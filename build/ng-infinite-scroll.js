@@ -1,4 +1,4 @@
-/* ng-infinite-scroll - v1.3.0 - 2016-06-30 */
+/* ng-infinite-scroll - v1.3.0 - 2016-07-09 */
 angular.module('infinite-scroll', []).value('THROTTLE_MILLISECONDS', null).directive('infiniteScroll', [
   '$rootScope', '$window', '$interval', 'THROTTLE_MILLISECONDS', function($rootScope, $window, $interval, THROTTLE_MILLISECONDS) {
     return {
@@ -44,11 +44,17 @@ angular.module('infinite-scroll', []).value('THROTTLE_MILLISECONDS', null).direc
           }
         };
         handler = function() {
-          var containerBottom, containerTopOffset, elementBottom, remaining, shouldScroll;
+          var containerBottom, containerTopOffset, elementBottom, last, remaining, shouldScroll;
           if (container === windowElement) {
             containerBottom = height(container) + pageYOffset(container[0].document.documentElement);
             elementBottom = offsetTop(elem) + height(elem);
           } else {
+            if (angular.equals(container, elem)) {
+              last = angular.element(elem).children().last();
+              if (last.size() === 1) {
+                elem = last;
+              }
+            }
             containerBottom = height(container);
             containerTopOffset = 0;
             if (offsetTop(container) !== void 0) {
