@@ -6,6 +6,8 @@ angular.module('infinite-scroll', [])
   scope:
     infiniteScroll: '&'
     infiniteScrollContainer: '='
+    infiniteScrollContainerLastChild: '='
+    infiniteScrollWrap: '='
     infiniteScrollDistance: '='
     infiniteScrollDisabled: '='
     infiniteScrollUseDocumentBottom: '=',
@@ -48,23 +50,32 @@ angular.module('infinite-scroll', [])
     # with a boolean that is set to true when the function is
     # called in order to throttle the function call.
     handler = ->
+      if scope.infiniteScrollWrap?
+        wrap = angular.element(document).find(scope.infiniteScrollWrap)
+        if wrap.size() == 1
+          _elem = wrap
+        else
+          _elem = elem
+      else
+        _elem = elem
+      _elem = elem
       if container == windowElement
         containerBottom = height(container) + pageYOffset(container[0].document.documentElement)
-        elementBottom = offsetTop(elem) + height(elem)
+        elementBottom = offsetTop(_elem) + height(_elem)
       else
-        if angular.equals(container, elem) or equalsContainerElem
+        if scope.infiniteScrollContainerLastChild?
           last = angular.element(container).children().last()
           if last.size() == 1
-            elem = last
+            _elem = last
             equalsContainerElem = true
         containerBottom = height(container)
         containerTopOffset = 0
         if offsetTop(container) != undefined
           containerTopOffset = offsetTop(container)
-        elementBottom = offsetTop(elem) - containerTopOffset + height(elem)
+        elementBottom = offsetTop(_elem) - containerTopOffset + height(_elem)
 
       if(useDocumentBottom)
-        elementBottom = height((elem[0].ownerDocument || elem[0].document).documentElement)
+        elementBottom = height((_elem[0].ownerDocument || _elem[0].document).documentElement)
 
       remaining = elementBottom - containerBottom
       shouldScroll = remaining <= height(container) * scrollDistance + 1
