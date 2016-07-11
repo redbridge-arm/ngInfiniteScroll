@@ -1,4 +1,4 @@
-/* ng-infinite-scroll - v1.3.0 - 2016-07-09 */
+/* ng-infinite-scroll - v1.3.1 - 2016-07-11 */
 angular.module('infinite-scroll', []).value('THROTTLE_MILLISECONDS', null).directive('infiniteScroll', [
   '$rootScope', '$window', '$interval', 'THROTTLE_MILLISECONDS', function($rootScope, $window, $interval, THROTTLE_MILLISECONDS) {
     return {
@@ -11,7 +11,7 @@ angular.module('infinite-scroll', []).value('THROTTLE_MILLISECONDS', null).direc
         infiniteScrollListenForEvent: '@'
       },
       link: function(scope, elem, attrs) {
-        var changeContainer, checkInterval, checkWhenEnabled, container, handleInfiniteScrollContainer, handleInfiniteScrollDisabled, handleInfiniteScrollDistance, handleInfiniteScrollUseDocumentBottom, handler, height, immediateCheck, offsetTop, pageYOffset, scrollDistance, scrollEnabled, throttle, unregisterEventListener, useDocumentBottom, windowElement;
+        var changeContainer, checkInterval, checkWhenEnabled, container, equalsContainerElem, handleInfiniteScrollContainer, handleInfiniteScrollDisabled, handleInfiniteScrollDistance, handleInfiniteScrollUseDocumentBottom, handler, height, immediateCheck, offsetTop, pageYOffset, scrollDistance, scrollEnabled, throttle, unregisterEventListener, useDocumentBottom, windowElement;
         windowElement = angular.element($window);
         scrollDistance = null;
         scrollEnabled = null;
@@ -21,6 +21,7 @@ angular.module('infinite-scroll', []).value('THROTTLE_MILLISECONDS', null).direc
         useDocumentBottom = false;
         unregisterEventListener = null;
         checkInterval = false;
+        equalsContainerElem = false;
         height = function(elem) {
           elem = elem[0] || elem;
           if (isNaN(elem.offsetHeight)) {
@@ -49,10 +50,11 @@ angular.module('infinite-scroll', []).value('THROTTLE_MILLISECONDS', null).direc
             containerBottom = height(container) + pageYOffset(container[0].document.documentElement);
             elementBottom = offsetTop(elem) + height(elem);
           } else {
-            if (angular.equals(container, elem)) {
-              last = angular.element(elem).children().last();
+            if (angular.equals(container, elem) || equalsContainerElem) {
+              last = angular.element(container).children().last();
               if (last.size() === 1) {
                 elem = last;
+                equalsContainerElem = true;
               }
             }
             containerBottom = height(container);
