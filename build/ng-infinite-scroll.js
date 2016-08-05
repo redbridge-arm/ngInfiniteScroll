@@ -1,4 +1,4 @@
-/* ng-infinite-scroll - v1.3.1 - 2016-07-11 */
+/* ng-infinite-scroll - v1.3.3 - 2016-08-05 */
 angular.module('infinite-scroll', []).value('THROTTLE_MILLISECONDS', null).directive('infiniteScroll', [
   '$rootScope', '$window', '$interval', 'THROTTLE_MILLISECONDS', function($rootScope, $window, $interval, THROTTLE_MILLISECONDS) {
     return {
@@ -47,13 +47,21 @@ angular.module('infinite-scroll', []).value('THROTTLE_MILLISECONDS', null).direc
           }
         };
         handler = function() {
-          var containerBottom, containerTopOffset, elementBottom, last, remaining, shouldScroll, wrap, _elem;
+          var containerBottom, containerTopOffset, elementBottom, last, newContainer, remaining, shouldScroll, _elem;
           if (scope.infiniteScrollWrap != null) {
-            wrap = angular.element(document).find(scope.infiniteScrollWrap);
-            if (wrap.size() === 1) {
-              _elem = wrap;
+            newContainer = scope.infiniteScrollWrap;
+            if (newContainer.nodeType && newContainer.nodeType === 1) {
+              newContainer = angular.element(newContainer);
+            } else if (typeof newContainer.append === 'function') {
+              newContainer = angular.element(newContainer[newContainer.length - 1]);
+            } else if (typeof newContainer === 'string') {
+              newContainer = angular.element(document.querySelector(newContainer));
+            }
+            if (newContainer != null) {
+              _elem = newContainer;
             } else {
               _elem = elem;
+              throw new Error("invalid infinite-scroll-wrap attribute.");
             }
           } else {
             _elem = elem;
