@@ -51,22 +51,11 @@ angular.module('infinite-scroll', [])
     # called in order to throttle the function call.
     handler = ->
       if scope.infiniteScrollWrap?
-
-        newContainer = scope.infiniteScrollWrap
-
-        if newContainer.nodeType && newContainer.nodeType == 1
-          newContainer = angular.element newContainer
-        else if typeof newContainer.append == 'function'
-          newContainer = angular.element newContainer[newContainer.length - 1]
-        else if typeof newContainer == 'string'
-          newContainer = angular.element document.querySelector newContainer
-
-        if newContainer?
-          _elem = newContainer
+        wrap = angular.element(document).find(scope.infiniteScrollWrap)
+        if wrap.size() == 1
+          _elem = wrap
         else
           _elem = elem
-          throw new Error("invalid infinite-scroll-wrap attribute.")
-
       else
         _elem = elem
       _elem = elem
